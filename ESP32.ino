@@ -24,6 +24,10 @@ void setup() {
   Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
   SerialBT.begin("ESP32_BT");
 
+  // INICIALIZACIÓN MANUAL DEL BUS SPI
+  SPI.begin(OLED_CLK, -1, OLED_MOSI, OLED_CS);
+
+  // INICIALIZACIÓN DE LA PANTALLA
   if (!display.begin(SSD1306_SWITCHCAPVCC)) {
     Serial.println(F("No se pudo inicializar la pantalla OLED"));
     while (true);
@@ -31,6 +35,7 @@ void setup() {
 
   display.clearDisplay();
   display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE); // IMPORTANTE: asegúrate de tener color
   display.setCursor(0, 0);
   display.println("Esperando datos");
   display.display();
@@ -51,8 +56,9 @@ void loop() {
     Serial.println(linea4);
 
     display.clearDisplay();
-    display.setTextSize(1);
     display.setCursor(0, 0);
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
     display.println(linea1);
     display.println(linea2);
     display.println(linea3);
