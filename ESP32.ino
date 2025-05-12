@@ -16,8 +16,9 @@ BluetoothSerial SerialBT;
 #define TXD2 17
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &SPI, OLED_DC, OLED_RESET, OLED_CS);
-String comando="";
-String mega="";
+String comando = "";
+String mega = "";
+
 void setup() {
   Serial.begin(115200);
   Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
@@ -30,13 +31,13 @@ void setup() {
 
   display.clearDisplay();
   display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
-  display.println("Esperando datos...");
+  display.println("Esperando datos");
   display.display();
 }
 
 void loop() {
+
   if (Serial2.available()) {
     String linea1 = Serial2.readStringUntil('\n');
     String linea2 = Serial2.readStringUntil('\n');
@@ -48,6 +49,7 @@ void loop() {
     Serial.println(linea2);
     Serial.println(linea3);
     Serial.println(linea4);
+
     display.clearDisplay();
     display.setTextSize(1);
     display.setCursor(0, 0);
@@ -57,26 +59,33 @@ void loop() {
     if (linea4.length() > 0) display.println(linea4);
     display.display();
 
+    SerialBT.println(linea1);
+    SerialBT.println(linea2);
+    SerialBT.println(linea3);
+    if (linea4.length() > 0) SerialBT.println(linea4);
+
     Serial2.println("OK");
   }
 
-  if(SerialBT.available()>0) {
-  comando = SerialBT.readStringUntil('\n');
-  comando.trim();
-  Serial.println("Comando recibido: " + comando);
+  if (SerialBT.available() > 0) {
+    comando = SerialBT.readStringUntil('\n');
+    comando.trim();
+    Serial.println("Comando: " + comando);
+    
+    SerialBT.println("Comando: " + comando);
 
-  if (comando == "F" || comando == "T" || comando == "L" || comando == "A" ||
-      comando == "LED1" || comando == "LED1OFF" || comando == "LED2" || comando == "LED2OFF" ||
-      comando == "LED3" || comando == "LED3OFF") 
-  {
-    Serial2.println(comando);
-    Serial.println("Enviado a Mega: " + comando);
-    delay(1500);
-    if (Serial2.available()) {
-      mega = SerialBT.readStringUntil('\n');
-      SerialBT.println(mega);
-      Serial.println("Respuesta del Mega: " + mega);
+    if (comando == "F" || comando == "T" || comando == "L" || comando == "A" ||
+        comando == "LED1" || comando == "LED1OFF" || comando == "LED2" || comando == "LED2OFF" ||
+        comando == "LED3" || comando == "LED3OFF") 
+    {
+      Serial2.println(comando);
+      Serial.println("Enviado a Mega: " + comando);
+      delay(1500);
+      if (Serial2.available()) {
+        mega = Serial2.readStringUntil('\n');
+        SerialBT.println(mega);
+        Serial.println(mega);
+      }
     }
-  }
   }
 }
